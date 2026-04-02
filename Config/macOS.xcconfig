@@ -1,0 +1,8 @@
+#include "Base.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = com.aspirewastaken.visionproscreensuptoinfinity.mac
+INFOPLIST_KEY_LSUIElement = YES
+INFOPLIST_KEY_NSBonjourServices = $(VISIONPRO_BONJOUR_TYPE)
+INFOPLIST_KEY_NSLocalNetworkUsageDescription = visionproscreensuptoinfinity discovers and connects to your Apple Vision Pro over the local network.
+INFOPLIST_KEY_NSScreenCaptureUsageDescription = visionproscreensuptoinfinity captures your Mac displays to stream them to Apple Vision Pro.
+CODE_SIGN_ENTITLEMENTS = macOS/App/VisionScreenMac.entitlements

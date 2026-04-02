@@ -1,0 +1,115 @@
+name: VisionProScreensUpToInfinity
+options:
+  bundleIdPrefix: com.aspirewastaken
+  deploymentTarget:
+    macOS: "15.2"
+    visionOS: "2.2"
+  groupSortPosition: top
+configs:
+  Debug: debug
+  Release: release
+settingGroups:
+  sharedSettings:
+    SWIFT_VERSION: 6.0
+    PRODUCT_NAME: $(TARGET_NAME)
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 0.1.0
+    CODE_SIGN_STYLE: Automatic
+packages: {}
+targets:
+  Shared:
+    type: framework
+    platform: [macOS, visionOS]
+    configFiles:
+      Debug: Config/Base.xcconfig
+      Release: Config/Base.xcconfig
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aspirewastaken.visionproscreensuptoinfinity.shared
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+    sources:
+      - path: Shared
+  VisionScreenMac:
+    type: application
+    platform: macOS
+    configFiles:
+      Debug: Config/macOS.xcconfig
+      Release: Config/macOS.xcconfig
+    dependencies:
+      - target: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aspirewastaken.visionproscreensuptoinfinity.mac
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_NSBonjourServices:
+          - _visionproscreensuptoinfinity._tcp
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: visionproscreensuptoinfinity discovers and connects to your Vision Pro on the local network.
+        INFOPLIST_KEY_NSScreenCaptureUsageDescription: visionproscreensuptoinfinity captures your selected Mac displays for local streaming to Apple Vision Pro.
+        INFOPLIST_KEY_NSAppleEventsUsageDescription: visionproscreensuptoinfinity may need automation access for future display control integrations.
+        ENABLE_APP_SANDBOX: NO
+    sources:
+      - path: Shared
+      - path: macOS
+  VisionProScreens:
+    type: application
+    platform: visionOS
+    configFiles:
+      Debug: Config/visionOS.xcconfig
+      Release: Config/visionOS.xcconfig
+    dependencies:
+      - target: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aspirewastaken.visionproscreensuptoinfinity.vision
+        INFOPLIST_KEY_UIApplicationSupportsMultipleScenes: YES
+        INFOPLIST_KEY_NSBonjourServices:
+          - _visionproscreensuptoinfinity._tcp
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: visionproscreensuptoinfinity discovers and connects to your Mac on the local network.
+    sources:
+      - path: Shared
+      - path: visionOS
+  SharedTests:
+    type: bundle.unit-test
+    platform: macOS
+    configFiles:
+      Debug: Config/Base.xcconfig
+      Release: Config/Base.xcconfig
+    dependencies:
+      - target: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aspirewastaken.visionproscreensuptoinfinity.sharedtests
+        GENERATE_INFOPLIST_FILE: YES
+    sources:
+      - path: Tests/SharedTests
+  macOSTests:
+    type: bundle.unit-test
+    platform: macOS
+    configFiles:
+      Debug: Config/macOS.xcconfig
+      Release: Config/macOS.xcconfig
+    dependencies:
+      - target: Shared
+      - target: VisionScreenMac
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aspirewastaken.visionproscreensuptoinfinity.mactests
+        GENERATE_INFOPLIST_FILE: YES
+    sources:
+      - path: Tests/macOSTests
+schemes:
+  VisionScreenMac:
+    build:
+      targets:
+        VisionScreenMac: all
+        Shared: [run, test]
+    test:
+      targets:
+        - SharedTests
+        - macOSTests
+  VisionProScreens:
+    build:
+      targets:
+        VisionProScreens: all
+        Shared: [run, test]

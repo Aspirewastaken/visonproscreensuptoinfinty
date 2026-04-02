@@ -1,0 +1,14 @@
+DerivedData/
+.build/
+.swiftpm/
+xcuserdata/
+*.xcuserstate
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+.DS_Store
+*.swp
+*.tmp
+VisionProScreensUpToInfinity.xcodeproj/

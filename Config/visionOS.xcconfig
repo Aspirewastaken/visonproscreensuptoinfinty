@@ -1,0 +1,4 @@
+PRODUCT_NAME = VisionProScreensUpToInfinityVision
+PRODUCT_BUNDLE_IDENTIFIER = com.aspirewastaken.visionproscreensuptoinfinity.vision
+INFOPLIST_KEY_NSLocalNetworkUsageDescription = Discover and connect to your Mac companion app over the local network.
+INFOPLIST_KEY_NSBonjourServices = _visionproscreensuptoinfinity._tcp
