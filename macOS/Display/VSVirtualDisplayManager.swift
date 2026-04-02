@@ -153,14 +153,18 @@ final class VSVirtualDisplayManager: ObservableObject {
         settings.setValue([mode], forKey: "modes")
         settings.setValue(false, forKey: "hiDPI")
 
-        // 4. Create virtual display
-        let sel = NSSelectorFromString("initWithDescriptor:")
-        guard displayClass.instancesRespond(to: sel) else {
+        // 4. Create virtual display using initWithDescriptor:
+        //    We use perform() which returns the initialized object. The private API
+        //    pattern is: [[CGVirtualDisplay alloc] initWithDescriptor:desc]
+        let initSel = NSSelectorFromString("initWithDescriptor:")
+        guard displayClass.instancesRespond(to: initSel) else {
             throw VSVirtualDisplayError.creationFailed("CGVirtualDisplay does not respond to initWithDescriptor:")
         }
 
-        let display = displayClass.init()
-        display.perform(NSSelectorFromString("initWithDescriptor:"), with: descriptor)
+        let allocated = displayClass.alloc()
+        guard let display = allocated.perform(initSel, with: descriptor)?.takeUnretainedValue() as? NSObject else {
+            throw VSVirtualDisplayError.creationFailed("initWithDescriptor: returned nil")
+        }
 
         // 5. Apply settings
         let applySel = NSSelectorFromString("applySettings:")
@@ -173,8 +177,13 @@ final class VSVirtualDisplayManager: ObservableObject {
         // 6. Get the system display ID
         var systemDisplayID: CGDirectDisplayID = 0
         if display.responds(to: NSSelectorFromString("displayID")) {
-            if let idValue = display.value(forKey: "displayID") as? CGDirectDisplayID {
-                systemDisplayID = idValue
+            if let idValue = display.value(forKey: "displayID") {
+                // The value may come back as NSNumber
+                if let number = idValue as? NSNumber {
+                    systemDisplayID = number.uint32Value
+                } else if let directID = idValue as? CGDirectDisplayID {
+                    systemDisplayID = directID
+                }
             }
         }
 

@@ -232,7 +232,7 @@ struct ContentView: View {
             Label("Performance Overlay", systemImage: "chart.bar")
         }
         .toggleStyle(.switch)
-        .onChange(of: showPerformanceOverlay) { _, newValue in
+        .onChange(of: showPerformanceOverlay) { newValue in
             connectionManager.showPerformanceOverlay = newValue
         }
     }

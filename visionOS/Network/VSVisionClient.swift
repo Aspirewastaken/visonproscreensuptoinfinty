@@ -9,6 +9,7 @@
 import Foundation
 import Network
 import Combine
+import CoreVideo
 
 /// Central connection manager for the visionOS app.
 ///

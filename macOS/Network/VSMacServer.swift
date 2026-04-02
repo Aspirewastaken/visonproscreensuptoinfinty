@@ -10,6 +10,7 @@
 import Foundation
 import Network
 import Combine
+import CoreGraphics
 
 /// Orchestrates the entire macOS companion pipeline:
 ///

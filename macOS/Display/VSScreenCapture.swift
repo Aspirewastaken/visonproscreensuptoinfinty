@@ -9,6 +9,7 @@
 import Foundation
 import ScreenCaptureKit
 import CoreMedia
+import CoreVideo
 import Combine
 
 /// Captures screen content from a specific display using ScreenCaptureKit.

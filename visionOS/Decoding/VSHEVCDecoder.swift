@@ -72,32 +72,44 @@ final class VSHEVCDecoder {
         }
 
         // Create format description from parameter sets
-        let parameterSets: [Data] = [vps, sps, pps]
-        let parameterSetPointers = parameterSets.map { data -> UnsafePointer<UInt8> in
-            return data.withUnsafeBytes { $0.baseAddress!.assumingMemoryBound(to: UInt8.self) }
-        }
-        let parameterSetSizes = parameterSets.map { $0.count }
+        // Copy parameter set data into contiguous arrays to ensure pointer lifetimes
+        let vpsBytes = Array(vps)
+        let spsBytes = Array(sps)
+        let ppsBytes = Array(pps)
 
         var formatDesc: CMVideoFormatDescription?
 
-        // Use the arrays to create format description
-        try parameterSetPointers.withUnsafeBufferPointer { pointersBuffer in
-            try parameterSetSizes.withUnsafeBufferPointer { sizesBuffer in
-                let status = CMVideoFormatDescriptionCreateFromHEVCParameterSets(
-                    allocator: kCFAllocatorDefault,
-                    parameterSetCount: parameterSets.count,
-                    parameterSetPointers: pointersBuffer.baseAddress!,
-                    parameterSetSizes: sizesBuffer.baseAddress!,
-                    nalUnitHeaderLength: 4,
-                    extensions: nil,
-                    formatDescriptionOut: &formatDesc
-                )
+        // Use withUnsafeBufferPointer to ensure pointer validity during the API call
+        try vpsBytes.withUnsafeBufferPointer { vpsBuf in
+            try spsBytes.withUnsafeBufferPointer { spsBuf in
+                try ppsBytes.withUnsafeBufferPointer { ppsBuf in
+                    var pointers: [UnsafePointer<UInt8>] = [
+                        vpsBuf.baseAddress!,
+                        spsBuf.baseAddress!,
+                        ppsBuf.baseAddress!
+                    ]
+                    var sizes: [Int] = [vpsBytes.count, spsBytes.count, ppsBytes.count]
 
-                guard status == noErr, let desc = formatDesc else {
-                    throw VSDecoderError.formatDescriptionFailed
+                    let status = pointers.withUnsafeMutableBufferPointer { ptrsBuf in
+                        sizes.withUnsafeMutableBufferPointer { sizesBuf in
+                            CMVideoFormatDescriptionCreateFromHEVCParameterSets(
+                                allocator: kCFAllocatorDefault,
+                                parameterSetCount: 3,
+                                parameterSetPointers: ptrsBuf.baseAddress!,
+                                parameterSetSizes: sizesBuf.baseAddress!,
+                                nalUnitHeaderLength: 4,
+                                extensions: nil,
+                                formatDescriptionOut: &formatDesc
+                            )
+                        }
+                    }
+
+                    guard status == noErr, let desc = formatDesc else {
+                        throw VSDecoderError.formatDescriptionFailed
+                    }
+
+                    self.formatDescription = desc
                 }
-
-                self.formatDescription = desc
             }
         }
 

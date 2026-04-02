@@ -9,6 +9,7 @@
 import Foundation
 import VideoToolbox
 import CoreMedia
+import CoreVideo
 
 /// Hardware-accelerated HEVC (H.265) encoder using VideoToolbox.
 ///
@@ -120,22 +121,22 @@ final class VSHEVCEncoder {
             (kVTCompressionPropertyKey_ProfileLevel, kVTProfileLevel_HEVC_Main_AutoLevel),
 
             // Bitrate
-            (kVTCompressionPropertyKey_AverageBitRate, config.bitrate as CFNumber),
+            (kVTCompressionPropertyKey_AverageBitRate, NSNumber(value: config.bitrate)),
 
             // Keyframe interval (max frames between keyframes)
-            (kVTCompressionPropertyKey_MaxKeyFrameInterval, config.keyframeInterval as CFNumber),
+            (kVTCompressionPropertyKey_MaxKeyFrameInterval, NSNumber(value: config.keyframeInterval)),
 
             // Keyframe interval in seconds
-            (kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, (Double(config.keyframeInterval) / Double(config.fps)) as CFNumber),
+            (kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, NSNumber(value: Double(config.keyframeInterval) / Double(config.fps))),
 
             // Disable B-frames for lower latency
             (kVTCompressionPropertyKey_AllowFrameReordering, kCFBooleanFalse),
 
             // Expected frame rate
-            (kVTCompressionPropertyKey_ExpectedFrameRate, config.fps as CFNumber),
+            (kVTCompressionPropertyKey_ExpectedFrameRate, NSNumber(value: config.fps)),
 
             // Data rate limits: allow burst up to 1.5x bitrate over 1 second
-            (kVTCompressionPropertyKey_DataRateLimits, [config.bitrate * 3 / 2, 1] as CFArray),
+            (kVTCompressionPropertyKey_DataRateLimits, [NSNumber(value: config.bitrate * 3 / 2), NSNumber(value: 1)] as CFArray),
         ]
 
         for (key, value) in properties {
@@ -170,7 +171,7 @@ final class VSHEVCEncoder {
         var frameProperties: [CFString: Any]? = nil
         if forceNextKeyframe {
             frameProperties = [
-                kVTEncodeFrameOptionKey_ForceKeyFrame: true
+                kVTEncodeFrameOptionKey_ForceKeyFrame: kCFBooleanTrue as Any
             ]
             forceNextKeyframe = false
         }

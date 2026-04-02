@@ -123,16 +123,13 @@ struct VSDisplayWindow: View {
 
     /// Render a decoded video frame to the display surface.
     private func renderFrame(_ pixelBuffer: CVPixelBuffer) {
-        guard let drawableQueue = drawableQueue,
-              let commandQueue = commandQueue,
-              let metalDevice = metalDevice else {
+        guard let drawableQueue = drawableQueue else {
             return
         }
 
         do {
             let drawable = try drawableQueue.nextDrawable()
 
-            // Create Metal texture from CVPixelBuffer
             let width = CVPixelBufferGetWidth(pixelBuffer)
             let height = CVPixelBufferGetHeight(pixelBuffer)
 
@@ -145,16 +142,9 @@ struct VSDisplayWindow: View {
             }
 
             let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
-
-            // Copy pixel data to the drawable texture using a blit command
-            guard let commandBuffer = commandQueue.makeCommandBuffer(),
-                  let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
-                return
-            }
-
             let texture = drawable.texture
 
-            // Create a region covering the entire texture
+            // Copy pixel data directly to the drawable texture
             let region = MTLRegion(
                 origin: MTLOrigin(x: 0, y: 0, z: 0),
                 size: MTLSize(width: min(width, texture.width), height: min(height, texture.height), depth: 1)
@@ -167,10 +157,7 @@ struct VSDisplayWindow: View {
                 bytesPerRow: bytesPerRow
             )
 
-            blitEncoder.endEncoding()
-            commandBuffer.commit()
-
-            // Present the drawable
+            // Present the drawable to display the frame
             drawable.present()
 
         } catch {
@@ -203,52 +190,52 @@ struct VSDisplayWindow: View {
 
     @ViewBuilder
     private var inputCaptureOverlay: some View {
-        // Transparent overlay to capture hover and gesture events
-        Color.clear
-            .contentShape(Rectangle())
-            .onContinuousHover { phase in
-                switch phase {
-                case .active(let location):
-                    // Forward mouse position
-                    let config = connectionManager.availableDisplays.first(where: { $0.id == displayID })?.config ?? .hd1080
-                    // Normalize to [0, 1]
-                    let normalizedX = location.x / CGFloat(config.width)
-                    let normalizedY = location.y / CGFloat(config.height)
+        // Transparent overlay to capture hover and gesture events.
+        // GeometryReader provides the actual view size for coordinate normalization.
+        GeometryReader { geometry in
+            Color.clear
+                .contentShape(Rectangle())
+                .onContinuousHover { phase in
+                    switch phase {
+                    case .active(let location):
+                        // Normalize to [0, 1] using actual view dimensions (points)
+                        let normalizedX = location.x / geometry.size.width
+                        let normalizedY = location.y / geometry.size.height
 
-                    connectionManager.inputForwarder.forwardMouseMove(
-                        normalizedX: normalizedX,
-                        normalizedY: normalizedY,
-                        displayID: displayID
-                    )
-                case .ended:
-                    break
+                        connectionManager.inputForwarder.forwardMouseMove(
+                            normalizedX: normalizedX,
+                            normalizedY: normalizedY,
+                            displayID: displayID
+                        )
+                    case .ended:
+                        break
+                    }
                 }
-            }
-            .onTapGesture { location in
-                // Forward tap as mouse click
-                let config = connectionManager.availableDisplays.first(where: { $0.id == displayID })?.config ?? .hd1080
-                let normalizedX = location.x / CGFloat(config.width)
-                let normalizedY = location.y / CGFloat(config.height)
+                .onTapGesture { location in
+                    // Normalize tap position using actual view dimensions
+                    let normalizedX = location.x / geometry.size.width
+                    let normalizedY = location.y / geometry.size.height
 
-                connectionManager.inputForwarder.forwardMouseClick(
-                    normalizedX: normalizedX,
-                    normalizedY: normalizedY,
-                    button: 0,
-                    pressed: true,
-                    displayID: displayID
-                )
-
-                // Send mouse up after short delay
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                     connectionManager.inputForwarder.forwardMouseClick(
                         normalizedX: normalizedX,
                         normalizedY: normalizedY,
                         button: 0,
-                        pressed: false,
+                        pressed: true,
                         displayID: displayID
                     )
+
+                    // Send mouse up after short delay
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        connectionManager.inputForwarder.forwardMouseClick(
+                            normalizedX: normalizedX,
+                            normalizedY: normalizedY,
+                            button: 0,
+                            pressed: false,
+                            displayID: displayID
+                        )
+                    }
                 }
-            }
+        }
     }
 }
 #endif
