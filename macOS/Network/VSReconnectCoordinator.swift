@@ -1,4 +1,5 @@
 import Foundation
+import Shared
 
 public actor VSReconnectCoordinator {
     private var attempts: Int = 0
