@@ -5,7 +5,7 @@ import VideoToolbox
 
 @MainActor
 public final class VSHEVCDecoder {
-    public enum DecoderError: LocalizedError, Equatable {
+    public enum DecoderError: LocalizedError, Equatable, Sendable {
         case unsupportedFormatDescription
         case sessionCreationFailed(OSStatus)
         case decodeFailed(OSStatus)

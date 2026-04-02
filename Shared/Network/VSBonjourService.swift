@@ -15,7 +15,7 @@ public struct VSDiscoveredService: Equatable, Identifiable, Sendable {
 }
 
 public final class VSBonjourAdvertiser {
-    public enum State: Equatable {
+    public enum State: Equatable, Sendable {
         case idle
         case ready(port: UInt16)
         case failed(String)
@@ -67,7 +67,7 @@ public final class VSBonjourAdvertiser {
 }
 
 public final class VSBonjourBrowser {
-    public enum State: Equatable {
+    public enum State: Equatable, Sendable {
         case idle
         case browsing
         case failed(String)
