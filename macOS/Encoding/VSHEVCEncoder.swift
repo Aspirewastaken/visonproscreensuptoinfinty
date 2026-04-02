@@ -95,6 +95,14 @@ public final class VSHEVCEncoder {
         }
     }
 
+    public func stop() {
+        finish()
+    }
+
+    public func forceKeyframe(reason _: String) {
+        requestKeyframe()
+    }
+
     private func prepare() throws {
         guard VTIsHardwareEncodeSupported(kCMVideoCodecType_HEVC) else {
             throw VSHEVCEncoderError.unsupportedCodec

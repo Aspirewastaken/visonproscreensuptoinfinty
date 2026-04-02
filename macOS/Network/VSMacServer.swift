@@ -14,7 +14,6 @@ public final class VSMacServer {
     private let videoListener: NWListener
     private let streamRouter: VSMacStreamRouter
     private let inputInjector: VSInputInjector
-    private let tcpQueue = DispatchQueue(label: VSConstants.Network.tcpQueueLabel + ".server")
     private let udpQueue = DispatchQueue(label: VSConstants.Network.udpQueueLabel + ".server")
 
     private var displaysProvider: (() -> [VSDisplayDescriptor])?
@@ -68,9 +67,7 @@ public final class VSMacServer {
             guard let self else { return }
             Task { @MainActor in
                 self.queuedUDPConnection = connection
-                await self.streamRouter.attachSession(
-                    VSUDPVideoChannel(connection: connection, queue: self.udpQueue)
-                )
+                self.currentSession?.attachVideoConnection(connection, queue: self.udpQueue)
             }
         }
         videoListener.stateUpdateHandler = { [weak self] state in
@@ -87,7 +84,7 @@ public final class VSMacServer {
     }
 
     public func stop() {
-        currentSession?.disconnect()
+        currentSession?.stop()
         currentSession = nil
         advertiser.stop()
         videoListener.cancel()
@@ -99,40 +96,34 @@ public final class VSMacServer {
         displays.removeAll { $0.id == descriptor.id }
         displays.append(descriptor)
         displays.sort { $0.id < $1.id }
-        currentSession?.push(displayList: displays)
+        currentSession?.updateDisplays(displays)
     }
 
     public func send(frame: VSEncodedFrame, using config: VSVideoConfig) {
-        streamRouter.enqueue(frame: frame, maxPayloadSize: config.payloadBudget())
+        streamRouter.enqueue(frame: frame, videoConfig: config)
     }
 
     private func attachControlConnection(_ connection: NWConnection) {
-        currentSession?.disconnect()
+        currentSession?.stop()
 
         let session = VSMacSession(
             controlConnection: connection,
             inputInjector: inputInjector,
             streamRouter: streamRouter,
-            displaysProvider: { [weak self] in self?.displaysProvider?() ?? self?.displays ?? [] }
+            displaysProvider: { [weak self] in self?.displaysProvider?() ?? self?.displays ?? [] },
+            stateHandler: { [weak self] state in
+                self?.onConnectionStateChanged?(state)
+            }
         )
 
-        session.onStatusChange = { [weak self] status in
-            guard let self else { return }
-            switch status {
-            case .idle:
-                self.onConnectionStateChanged?(.ready)
-            case .paired(let clientName):
-                self.onClientDescriptionChanged?(clientName)
-            case .failed(let message):
-                self.onConnectionStateChanged?(.failed(message))
-            case .disconnected:
-                self.onConnectionStateChanged?(.cancelled)
-            }
+        if let queuedUDPConnection {
+            session.attachVideoConnection(queuedUDPConnection, queue: udpQueue)
+            self.queuedUDPConnection = nil
         }
 
         currentSession = session
         onClientDescriptionChanged?("Vision Pro client connected")
-        session.start(on: tcpQueue)
-        session.push(displayList: displays)
+        session.start()
+        session.updateDisplays(displays)
     }
 }

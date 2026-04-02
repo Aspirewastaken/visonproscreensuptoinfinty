@@ -17,7 +17,7 @@ public final class VSEncoderPool {
         let nextIDs = Set(displays.map(\.id))
 
         for staleID in pipelines.keys where !nextIDs.contains(staleID) {
-            pipelines[staleID]?.stop()
+            pipelines[staleID]?.finish()
             pipelines.removeValue(forKey: staleID)
         }
 
@@ -45,12 +45,12 @@ public final class VSEncoderPool {
     }
 
     public func requestKeyframe(displayID: UInt8) {
-        pipelines[displayID]?.forceKeyframe(reason: "requested by client")
+        pipelines[displayID]?.requestKeyframe()
     }
 
     public func stopAll() {
         for encoder in pipelines.values {
-            encoder.stop()
+            encoder.finish()
         }
         pipelines.removeAll()
     }

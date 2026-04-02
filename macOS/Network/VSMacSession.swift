@@ -4,10 +4,18 @@ import Shared
 
 @MainActor
 public final class VSMacSession {
+    public enum Status: Equatable {
+        case idle
+        case paired(String)
+        case failed(String)
+        case disconnected
+    }
+
     public let id: UUID
     public private(set) var state: VSConnectionState = .setup
     public private(set) var pairedClientName: String?
     public private(set) var pairAcceptedAt: Date?
+    public var onStatusChange: ((Status) -> Void)?
 
     private let controlChannel: VSTCPControlChannel
     private let inputInjector: VSInputInjector
@@ -33,14 +41,20 @@ public final class VSMacSession {
         bindCallbacks()
     }
 
-    public func start() {
+    public func start(on _: DispatchQueue? = nil) {
         controlChannel.start()
         updateState(.setup)
+        onStatusChange?(.idle)
     }
 
     public func stop() {
         controlChannel.cancel()
         updateState(.cancelled)
+        onStatusChange?(.disconnected)
+    }
+
+    public func disconnect() {
+        stop()
     }
 
     public func attachVideoConnection(_ connection: NWConnection, queue: DispatchQueue) {
@@ -63,10 +77,19 @@ public final class VSMacSession {
         }
     }
 
+    public func push(displayList displays: [VSDisplayDescriptor]) {
+        updateDisplays(displays)
+    }
+
     private func bindCallbacks() {
         controlChannel.onStateChange = { [weak self] state in
             Task { @MainActor in
                 self?.updateState(state)
+                if case .failed(let message) = state {
+                    self?.onStatusChange?(.failed(message))
+                } else if case .cancelled = state {
+                    self?.onStatusChange?(.disconnected)
+                }
             }
         }
 
@@ -94,6 +117,7 @@ public final class VSMacSession {
             )))
             updateDisplays(displaysProvider())
             updateState(.ready)
+            onStatusChange?(.paired(request.macName))
         case .requestKeyframe(let request):
             Task {
                 await streamRouter.requestKeyframe(displayID: request.displayID)

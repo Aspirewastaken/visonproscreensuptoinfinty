@@ -4,6 +4,7 @@ import Shared
 public actor VSMacStreamRouter {
     private let packetizer = VSFramePacketizer()
     private var videoChannel: VSUDPVideoChannel?
+    private var displayList: [VSDisplayDescriptor] = []
     private var sequenceNumbers: [UInt8: UInt32] = [:]
     private var frameNumbers: [UInt8: UInt32] = [:]
     private var keyframeRequests: Set<UInt8> = []
@@ -16,6 +17,10 @@ public actor VSMacStreamRouter {
 
     public func detachSession() {
         videoChannel = nil
+    }
+
+    public func updateDisplayList(_ displays: [VSDisplayDescriptor]) {
+        displayList = displays
     }
 
     public func enqueue(frame: VSEncodedFrame, videoConfig: VSVideoConfig) {
