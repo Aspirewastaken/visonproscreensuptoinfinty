@@ -48,7 +48,6 @@ targets:
         INFOPLIST_KEY_NSAppleEventsUsageDescription: visionproscreensuptoinfinity may need automation access for future display control integrations.
         ENABLE_APP_SANDBOX: NO
     sources:
-      - path: Shared
       - path: macOS
   VisionProScreens:
     type: application
@@ -66,7 +65,6 @@ targets:
           - _visionproscreensuptoinfinity._tcp
         INFOPLIST_KEY_NSLocalNetworkUsageDescription: visionproscreensuptoinfinity discovers and connects to your Mac on the local network.
     sources:
-      - path: Shared
       - path: visionOS
   SharedTests:
     type: bundle.unit-test
