@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-public enum VSConnectionState: Equatable {
+public enum VSConnectionState: Equatable, Sendable {
     case setup
     case waiting(String)
     case preparing

@@ -4,12 +4,12 @@ import Shared
 @MainActor
 public final class VSEncoderPool {
     private var pipelines: [UInt8: VSHEVCEncoder] = [:]
-    private let configProvider: @Sendable () -> VSVideoConfig
+    private let configProvider: () -> VSVideoConfig
 
     public var onFrameEncoded: (@Sendable (VSEncodedFrame) -> Void)?
     public var onPerformanceSnapshot: (@Sendable (VSPerformanceSnapshot) -> Void)?
 
-    public init(configProvider: @escaping @Sendable () -> VSVideoConfig) {
+    public init(configProvider: @escaping () -> VSVideoConfig) {
         self.configProvider = configProvider
     }
 

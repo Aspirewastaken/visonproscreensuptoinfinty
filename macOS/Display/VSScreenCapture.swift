@@ -1,11 +1,11 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Foundation
 import ScreenCaptureKit
 import Shared
 
 @MainActor
 public final class VSScreenCapture: NSObject, SCStreamOutput {
-    public struct CapturedFrame: Sendable {
+    public struct CapturedFrame: @unchecked Sendable {
         public let displayID: UInt8
         public let sampleBuffer: CMSampleBuffer
         public let timestamp: CMTime
