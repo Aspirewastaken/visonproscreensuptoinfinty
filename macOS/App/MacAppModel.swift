@@ -144,8 +144,10 @@ public final class MacAppModel {
         encoderPool.configure(displays: displays)
 
         capture.onFrame = { [weak self] capturedFrame in
-            guard let self else { return }
-            self.encoderPool.encode(capturedFrame)
+            Task { @MainActor in
+                guard let self else { return }
+                self.encoderPool.encode(capturedFrame)
+            }
         }
 
         Task {
