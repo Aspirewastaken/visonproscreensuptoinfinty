@@ -10,7 +10,6 @@ configs:
   Release: release
 settingGroups:
   sharedSettings:
-    SWIFT_VERSION: 6.0
     PRODUCT_NAME: $(TARGET_NAME)
     CURRENT_PROJECT_VERSION: 1
     MARKETING_VERSION: 0.1.0
@@ -83,6 +82,21 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
     sources:
       - path: Tests/SharedTests
+  macOSTests:
+    type: bundle.unit-test
+    platform: macOS
+    configFiles:
+      Debug: Config/macOS.xcconfig
+      Release: Config/macOS.xcconfig
+    dependencies:
+      - target: Shared
+      - target: VisionScreenMac
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aspirewastaken.visionproscreensuptoinfinity.mactests
+        GENERATE_INFOPLIST_FILE: YES
+    sources:
+      - path: Tests/macOSTests
 schemes:
   VisionScreenMac:
     build:
@@ -92,6 +106,7 @@ schemes:
     test:
       targets:
         - SharedTests
+        - macOSTests
   VisionProScreens:
     build:
       targets:

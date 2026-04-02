@@ -1,6 +1,7 @@
 #include "Base.xcconfig"
 
 PRODUCT_BUNDLE_IDENTIFIER = com.aspirewastaken.visionproscreensuptoinfinity.mac
+VISIONPRO_BONJOUR_TYPE = _visionproscreensuptoinfinity._tcp
 INFOPLIST_KEY_LSUIElement = YES
 INFOPLIST_KEY_NSBonjourServices = $(VISIONPRO_BONJOUR_TYPE)
 INFOPLIST_KEY_NSLocalNetworkUsageDescription = visionproscreensuptoinfinity discovers and connects to your Apple Vision Pro over the local network.
