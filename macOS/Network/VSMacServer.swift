@@ -88,7 +88,9 @@ public final class VSMacServer {
         currentSession = nil
         advertiser.stop()
         videoListener.cancel()
-        Task { await streamRouter.detachSession() }
+        Task { @MainActor in
+            await streamRouter.detachSession()
+        }
         onConnectionStateChanged?(.cancelled)
     }
 

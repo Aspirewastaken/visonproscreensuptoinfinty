@@ -150,7 +150,7 @@ public final class MacAppModel {
             }
         }
 
-        Task {
+        Task { @MainActor in
             for descriptor in displays {
                 try? await capture.startCapture(for: descriptor, config: settings.selectedVideoConfig)
             }

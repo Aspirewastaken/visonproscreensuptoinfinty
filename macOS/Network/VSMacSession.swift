@@ -65,15 +65,15 @@ public final class VSMacSession {
             }
         }
         channel.start()
-        Task {
-            await streamRouter.attachSession(channel)
+        Task { @MainActor in
+            await self.streamRouter.attachSession(channel)
         }
     }
 
     public func updateDisplays(_ displays: [VSDisplayDescriptor]) {
         controlChannel.send(.displayList(.init(displays: displays)))
-        Task {
-            await streamRouter.updateDisplayList(displays)
+        Task { @MainActor in
+            await self.streamRouter.updateDisplayList(displays)
         }
     }
 
@@ -119,8 +119,8 @@ public final class VSMacSession {
             updateState(.ready)
             onStatusChange?(.paired(request.macName))
         case .requestKeyframe(let request):
-            Task {
-                await streamRouter.requestKeyframe(displayID: request.displayID)
+            Task { @MainActor in
+                await self.streamRouter.requestKeyframe(displayID: request.displayID)
             }
         case .performancePing(let ping):
             controlChannel.send(.performancePong(.init(
