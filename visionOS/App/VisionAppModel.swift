@@ -204,7 +204,6 @@ public final class VisionAppModel {
         client.onFrameDecoded = { [weak self] frame in
             Task { @MainActor in
                 self?.displayStore.set(frame: frame)
-                _ = self?.windowManager.displayLayer(for: frame.displayID)
             }
         }
 

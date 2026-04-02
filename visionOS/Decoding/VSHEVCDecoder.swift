@@ -24,14 +24,12 @@ public final class VSHEVCDecoder {
 
     public var onFrame: (@Sendable (VSDecodedFrame) -> Void)?
     public var onFailure: (@Sendable (DecoderError) -> Void)?
-    private let displayLayer = AVSampleBufferDisplayLayer()
-
-    public init() {
-        displayLayer.videoGravity = .resizeAspect
-    }
+    
+    public init() {}
 
     public func invalidate() {
-        displayLayer.flushAndRemoveImage()
+        // Placeholder until a full VTDecompressionSession + sample buffer output path
+        // is verified on Apple hardware.
     }
 
     public func decode(_ frame: VSReassembledFrame) {
@@ -39,8 +37,7 @@ public final class VSHEVCDecoder {
             displayID: frame.displayID,
             frameNumber: frame.frameNumber,
             presentationTimestampMicros: frame.presentationTimestampMicros,
-            accessUnit: frame.payload,
-            displayLayer: displayLayer
+            accessUnit: frame.payload
         )
         onFrame?(decodedFrame)
     }

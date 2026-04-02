@@ -10,7 +10,6 @@ public struct VSDisplayWindow: View {
 
     public var body: some View {
         let display = appModel.displayStore.display(for: displayID)
-        let frame = appModel.displayStore.frame(for: displayID)
         let snapshot = appModel.statisticsStore.snapshots[displayID]
         let isOverlayVisible = appModel.windowManager.isOverlayVisible(for: displayID)
 
@@ -25,7 +24,7 @@ public struct VSDisplayWindow: View {
                     }
                 }
 
-                VSVideoSurfaceView(displayLayer: frame?.displayLayer ?? appModel.windowManager.displayLayer(for: displayID))
+                VSVideoSurfaceView(displayLayer: appModel.windowManager.displayLayer(for: displayID))
                     .frame(minWidth: 640, minHeight: 360)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
 
