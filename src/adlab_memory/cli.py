@@ -8,13 +8,15 @@ from pathlib import Path
 from adlab_memory.config import load_pipeline_config
 from adlab_memory.ingest.registry import ingest_exports
 from adlab_memory.mcp.server import MCPMemoryServer
-from adlab_memory.orchestration.mission import MissionResult, MissionRunner, mission_audit
+from adlab_memory.orchestration.mission import MissionRunner, mission_audit
 from adlab_memory.security.encryption import decrypt_file, encrypt_file
 from adlab_memory.security.keys import ensure_key
 
 
 def _cmd_ingest(args: argparse.Namespace) -> int:
     cfg = load_pipeline_config(Path(args.config))
+    if args.input_dir:
+        cfg.paths.input_root = Path(args.input_dir).resolve()
     events, manifest = ingest_exports(
         input_root=cfg.paths.input_root,
         normalized_root=cfg.paths.normalized_root,
@@ -29,7 +31,7 @@ def _cmd_ingest(args: argparse.Namespace) -> int:
 def _cmd_compile(args: argparse.Namespace) -> int:
     cfg = load_pipeline_config(Path(args.config))
     runner = MissionRunner(cfg)
-    result = runner.start()
+    result = runner.compile_once()
     print(json.dumps(_jsonable_result(result), indent=2))
     return 0
 
@@ -54,7 +56,9 @@ def _cmd_mission_status(args: argparse.Namespace) -> int:
     cfg = load_pipeline_config(Path(args.config))
     runner = MissionRunner(cfg)
     state = runner.status()
-    print(json.dumps(_jsonable_result(state), indent=2))
+    checkpoint = runner.checkpoint_status()
+    payload = {"state": _jsonable_result(state), "checkpoint": _jsonable_result(checkpoint)}
+    print(json.dumps(payload, indent=2))
     return 0
 
 
@@ -109,7 +113,11 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     ingest = sub.add_parser("ingest", help="Ingest provider exports")
-    ingest.add_argument("--input-dir", required=True, help="Directory with provider exports")
+    ingest.add_argument(
+        "--input-dir",
+        default="",
+        help="Optional directory with provider exports; overrides config input_root",
+    )
     ingest.set_defaults(func=_cmd_ingest)
 
     compile_cmd = sub.add_parser("compile", help="Compile one batch into wiki")

@@ -1,0 +1,23 @@
+{
+  "account_id": "acct-grok-1",
+  "conversations": [
+    {
+      "id": "c-grok-1",
+      "title": "Grok operations",
+      "messages": [
+        {
+          "id": "g1",
+          "role": "user",
+          "text": "Set up nightly backups to NAS and verify reconnect behavior.",
+          "created_at": "2026-04-02T08:00:00Z"
+        },
+        {
+          "id": "g2",
+          "role": "assistant",
+          "text": "We should create an operations wiki article and test retries.",
+          "created_at": "2026-04-02T08:00:20Z"
+        }
+      ]
+    }
+  ]
+}

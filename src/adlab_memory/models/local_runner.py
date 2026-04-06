@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from urllib import request
 
 from adlab_memory.models.base import ModelBackend, ModelProfile
@@ -42,6 +42,7 @@ class OpenAICompatibleBackend(ModelBackend):
 @dataclass(slots=True)
 class LocalModelRunner:
     profile: ModelProfile
+    backend: ModelBackend = field(init=False)
 
     def __post_init__(self) -> None:
         if self.profile.backend == "openai_compatible":

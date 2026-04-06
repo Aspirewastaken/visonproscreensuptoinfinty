@@ -1,0 +1,23 @@
+{
+  "account_id": "acct-claude-1",
+  "conversations": [
+    {
+      "id": "c-claude-1",
+      "title": "Claude planning",
+      "messages": [
+        {
+          "id": "m1",
+          "role": "user",
+          "content": "We should design the memory pipeline and add checkpoints.",
+          "created_at": "2026-04-01T10:00:00Z"
+        },
+        {
+          "id": "m2",
+          "role": "assistant",
+          "content": "Decision: build a resumable mission orchestration loop.",
+          "created_at": "2026-04-01T10:00:10Z"
+        }
+      ]
+    }
+  ]
+}

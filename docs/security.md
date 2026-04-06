@@ -5,9 +5,9 @@
 Wiki and artifacts can be encrypted with a local symmetric key:
 
 ```bash
-adlab-memory keys bootstrap --output .adlab/keys/fernet.key
-adlab-memory secure encrypt --key .adlab/keys/fernet.key --path data/wiki
-adlab-memory secure decrypt --key .adlab/keys/fernet.key --path data/wiki
+adlab-memory keys bootstrap --output .adlab/keys/local.key
+adlab-memory encrypt --key-file .adlab/keys/local.key --input-path data/wiki/example.md
+adlab-memory decrypt --key-file .adlab/keys/local.key --input-path data/wiki/example.md.enc
 ```
 
 ## Threat model (initial)

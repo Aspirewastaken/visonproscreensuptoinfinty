@@ -32,11 +32,26 @@ adlab-memory mission resume --config configs/pipeline.default.yaml
 ## 5) Audit
 
 ```bash
-adlab-memory mission audit --state .adlab/state/mission_state.json
+adlab-memory mission audit --config configs/pipeline.default.yaml
 ```
 
-## 6) Serve memory tools
+## 6) One-pass compile (bounded by config max_batch_size)
 
 ```bash
-adlab-memory mcp serve --wiki-dir data/wiki
+adlab-memory compile --config configs/pipeline.default.yaml
+```
+
+## 7) Inspect memory tools
+
+```bash
+adlab-memory mcp-tools --config configs/pipeline.default.yaml
+adlab-memory mcp-tools --config configs/pipeline.default.yaml --json
+```
+
+## 8) Scripts
+
+```bash
+./scripts/bootstrap_keys.sh
+./scripts/run_mission.sh
+./scripts/smoke_test.sh
 ```

@@ -24,8 +24,23 @@ adlab-memory --help
 
 ```bash
 adlab-memory mission start --config configs/pipeline.default.yaml
-adlab-memory mission status --state .adlab/state/mission_state.json
+adlab-memory mission status --config configs/pipeline.default.yaml
+adlab-memory mission audit --config configs/pipeline.default.yaml
+adlab-memory compile --config configs/pipeline.default.yaml
 ```
+
+## Run tests
+
+```bash
+python3 -m pytest -q
+./scripts/smoke_test.sh
+```
+
+## Scripts
+
+- `scripts/run_mission.sh`: start full mission.
+- `scripts/bootstrap_keys.sh`: create local key file.
+- `scripts/smoke_test.sh`: CLI + pytest smoke checks.
 
 ## Project layout
 

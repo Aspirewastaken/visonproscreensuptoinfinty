@@ -1,0 +1,23 @@
+{
+  "account_id": "acct-gemini-1",
+  "conversations": [
+    {
+      "id": "c-gemini-1",
+      "title": "Gemini methodology",
+      "messages": [
+        {
+          "id": "gm1",
+          "role": "user",
+          "text": "What validation loop should we run for the wiki compiler?",
+          "timestamp": "2026-04-03T09:00:00Z"
+        },
+        {
+          "id": "gm2",
+          "role": "assistant",
+          "text": "Use hypothesis-driven testing and mission audit checkpoints.",
+          "timestamp": "2026-04-03T09:00:15Z"
+        }
+      ]
+    }
+  ]
+}

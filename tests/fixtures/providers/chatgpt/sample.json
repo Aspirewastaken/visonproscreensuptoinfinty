@@ -1,0 +1,33 @@
+{
+  "account_id": "acct-chatgpt-1",
+  "conversations": [
+    {
+      "id": "c-chatgpt-1",
+      "title": "ChatGPT architecture",
+      "mapping": {
+        "msg-1": {
+          "message": {
+            "author": { "role": "user" },
+            "create_time": 1711965600,
+            "content": {
+              "parts": [
+                "We must keep the system local and private."
+              ]
+            }
+          }
+        },
+        "msg-2": {
+          "message": {
+            "author": { "role": "assistant" },
+            "create_time": 1711965610,
+            "content": {
+              "parts": [
+                "Plan: use an MCP server for memory_search and memory_get_context."
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}
