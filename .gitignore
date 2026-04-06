@@ -1,0 +1,9 @@
+.pytest_cache/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Local runtime artifacts
+.adlab/
+data/
