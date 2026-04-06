@@ -48,7 +48,7 @@ class PipelineConfig(BaseModel):
     def from_yaml(cls, path: Path) -> "PipelineConfig":
         payload = yaml.safe_load(path.read_text())
         config = cls.model_validate(payload)
-        return resolve_relative_paths(config, base_dir=Path.cwd())
+        return resolve_relative_paths(config, base_dir=path.parent)
 
 
 def resolve_relative_paths(config: PipelineConfig, *, base_dir: Path) -> PipelineConfig:
