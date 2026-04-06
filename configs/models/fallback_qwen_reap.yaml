@@ -1,0 +1,13 @@
+name: qwen_reap_fallback
+backend: mock
+model_id: qwen/reap-fallback
+endpoint: http://127.0.0.1:8081/v1/chat/completions
+context_window: 262144
+max_output_tokens: 1024
+temperature: 0.0
+adaptive_chunk:
+  enabled: true
+  min_tokens: 400
+  max_tokens: 2200
+  low_signal_skip_threshold: 0.3
+fallback_chain: []

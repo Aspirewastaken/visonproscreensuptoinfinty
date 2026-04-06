@@ -1,0 +1,2 @@
+"""Provider ingestion adapters."""
+

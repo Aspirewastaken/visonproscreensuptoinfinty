@@ -1,0 +1,14 @@
+name: minimax_m2_7_reap
+backend: mock
+model_id: minimax/m2.7-reap-local
+endpoint: http://127.0.0.1:8080/v1/chat/completions
+context_window: 1000000
+max_output_tokens: 2048
+temperature: 0.1
+adaptive_chunk:
+  enabled: true
+  min_tokens: 600
+  max_tokens: 4000
+  low_signal_skip_threshold: 0.2
+fallback_chain:
+  - configs/models/fallback_qwen_reap.yaml

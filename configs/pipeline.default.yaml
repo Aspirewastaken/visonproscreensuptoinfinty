@@ -1,0 +1,24 @@
+paths:
+  input_root: data/input
+  normalized_root: data/normalized
+  wiki_root: data/wiki
+  state_root: .adlab/state
+  checkpoints_root: .adlab/checkpoints
+
+ingest:
+  providers: ["claude", "chatgpt", "grok", "gemini"]
+  include_globs: ["*.json"]
+
+compile:
+  chunk_target_tokens: 1200
+  chunk_overlap_tokens: 120
+  max_batch_size: 20
+  prioritize: newest_first
+
+model:
+  profile: configs/models/minimax_m2_7_reap.yaml
+
+mission:
+  retries: 2
+  quarantine_failed_batches: true
+  save_every_batches: 5

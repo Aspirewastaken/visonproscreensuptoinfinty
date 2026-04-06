@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adlab-memory"
+version = "0.1.0"
+description = "Local-first private memory wiki compiler and mission runner."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "AdLab" }]
+dependencies = [
+  "typer>=0.12.3",
+  "pydantic>=2.8.2",
+  "PyYAML>=6.0.1",
+  "cryptography>=43.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.2",
+]
+
+[project.scripts]
+adlab-memory = "adlab_memory.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
