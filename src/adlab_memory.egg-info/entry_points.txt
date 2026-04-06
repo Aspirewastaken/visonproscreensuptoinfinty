@@ -1,2 +1,0 @@
-[console_scripts]
-adlab-memory = adlab_memory.cli:main
